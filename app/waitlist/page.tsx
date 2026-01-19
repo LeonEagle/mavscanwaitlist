@@ -10,7 +10,7 @@ const selectOptions = {
     "Beverages",
     "All of the above",
   ],
-  frequency: ["Daily", "Weekly", "Monthly", "Occasionally"],
+  purchaseFrequency: ["1-5", "6-10", "11-20", "20+"],
   concern: [
     "Authenticity",
     "Safety ingredients",
@@ -19,6 +19,32 @@ const selectOptions = {
     "All of the above",
   ],
   counterfeit: ["Yes", "No", "Not sure"],
+  scansPerMonth: ["1-10 scans", "11-20 scans", "21-50 scans", "50+ scans"],
+  creditPackage: [
+    "10 credits - ₦750",
+    "20 credits - ₦1,500",
+    "50 credits - ₦2,500",
+    "Not sure yet",
+  ],
+  paymentPreference: [
+    "Pay-as-you-go credit purchases",
+    "Monthly subscription with credits included",
+    "Both options available",
+  ],
+  verificationImportance: [
+    "Extremely important",
+    "Very important",
+    "Somewhat important",
+    "Not very important",
+  ],
+  fairPrice: ["₦50-₦75", "₦76-₦100", "₦101-₦150", "Other"],
+  willingnessToPay: [
+    "Definitely yes",
+    "Probably yes",
+    "Not sure",
+    "Probably not",
+    "Definitely not",
+  ],
   research: [
     "Online reviews",
     "Brand websites",
@@ -43,6 +69,7 @@ const selectOptions = {
     "Other",
   ],
   beta: ["Yes", "No", "Maybe"],
+  referralInterest: ["Yes", "No", "Maybe"],
   referral: [
     "Social media (Instagram, TikTok, etc.)",
     "Friend or family",
@@ -53,52 +80,90 @@ const selectOptions = {
 };
 
 type WaitlistFormState = {
+  // Step 1: Essential Information
   fullName: string;
   email: string;
   phone: string;
   country: string;
 
+  // Step 2: User Profile & Needs
   interests: string[];
-  frequency: string;
+  purchaseFrequency: string;
   concern: string[];
   counterfeit: string;
 
+  // Step 3: Pain Points & Motivations
   challenges: string;
   research: string;
+  researchOther: string;
   desiredFeatures: string[];
+  desiredFeaturesOther: string;
 
+  // Step 4: Usage & Credit System
+  scansPerMonth: string;
+  creditPackage: string;
+  paymentPreference: string;
+  verificationImportance: string;
+
+  // Step 5: Value Perception
+  fairPrice: string;
+  fairPriceOther: string;
+  willingnessToPay: string;
+
+  // Step 6: User Category
   category: string;
   categoryOther: string;
   businessType: string;
+  businessMonthlyVolume: string;
+
+  // Step 7: Engagement & Incentives
+  referralInterest: string;
   beta: string;
-  researchOther: string;
-  desiredFeaturesOther: string;
   referral: string;
   referralOther: string;
   wishlist: string;
 };
 
 const defaultState: WaitlistFormState = {
+  // Step 1
   fullName: "",
   email: "",
   phone: "",
   country: "",
 
+  // Step 2
   interests: [],
-  frequency: "",
+  purchaseFrequency: "",
   concern: [],
   counterfeit: "",
 
+  // Step 3
   challenges: "",
   research: "",
+  researchOther: "",
   desiredFeatures: [],
+  desiredFeaturesOther: "",
 
+  // Step 4
+  scansPerMonth: "",
+  creditPackage: "",
+  paymentPreference: "",
+  verificationImportance: "",
+
+  // Step 5
+  fairPrice: "",
+  fairPriceOther: "",
+  willingnessToPay: "",
+
+  // Step 6
   category: "",
   categoryOther: "",
   businessType: "",
+  businessMonthlyVolume: "",
+
+  // Step 7
+  referralInterest: "",
   beta: "",
-  researchOther: "",
-  desiredFeaturesOther: "",
   referral: "",
   referralOther: "",
   wishlist: "",
@@ -340,12 +405,12 @@ function TextArea({
 }
 
 export default function WaitlistPage() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
   const [state, setState] = useState<WaitlistFormState>(defaultState);
   const [submitted, setSubmitted] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  const totalSteps = 4;
+  const totalSteps = 7;
   const progressPct = useMemo(
     () => Math.round((step / totalSteps) * 100),
     [step],
@@ -355,7 +420,7 @@ export default function WaitlistPage() {
     (step === 1 && (!state.fullName || !state.email || !state.country)) ||
     (step === 2 &&
       (state.interests.length === 0 ||
-        !state.frequency ||
+        !state.purchaseFrequency ||
         state.concern.length === 0 ||
         !state.counterfeit)) ||
     (step === 3 &&
@@ -365,8 +430,19 @@ export default function WaitlistPage() {
         state.desiredFeatures.length === 0 ||
         (state.desiredFeatures.includes("Other") && !state.desiredFeaturesOther))) ||
     (step === 4 &&
+      (!state.scansPerMonth ||
+        !state.creditPackage ||
+        !state.paymentPreference ||
+        !state.verificationImportance)) ||
+    (step === 5 &&
+      (!state.fairPrice ||
+        (state.fairPrice === "Other" && !state.fairPriceOther) ||
+        !state.willingnessToPay)) ||
+    (step === 6 &&
       (!state.category ||
-        (state.category === "Other" && !state.categoryOther) ||
+        (state.category === "Other" && !state.categoryOther))) ||
+    (step === 7 &&
+      (!state.referralInterest ||
         !state.beta ||
         !state.referral ||
         (state.referral === "Other" && !state.referralOther)));
@@ -377,7 +453,7 @@ export default function WaitlistPage() {
       (step === 1 && state.fullName && state.email && state.country) ||
       (step === 2 &&
         state.interests.length > 0 &&
-        state.frequency &&
+        state.purchaseFrequency &&
         state.concern.length > 0 &&
         state.counterfeit) ||
       (step === 3 &&
@@ -387,8 +463,19 @@ export default function WaitlistPage() {
         state.desiredFeatures.length > 0 &&
         (!state.desiredFeatures.includes("Other") || state.desiredFeaturesOther)) ||
       (step === 4 &&
+        state.scansPerMonth &&
+        state.creditPackage &&
+        state.paymentPreference &&
+        state.verificationImportance) ||
+      (step === 5 &&
+        state.fairPrice &&
+        (state.fairPrice !== "Other" || state.fairPriceOther) &&
+        state.willingnessToPay) ||
+      (step === 6 &&
         state.category &&
-        (state.category !== "Other" || state.categoryOther) &&
+        (state.category !== "Other" || state.categoryOther)) ||
+      (step === 7 &&
+        state.referralInterest &&
         state.beta &&
         state.referral &&
         (state.referral !== "Other" || state.referralOther));
@@ -399,23 +486,22 @@ export default function WaitlistPage() {
     }
 
     setShowValidationErrors(false);
-    if (step < 4) setStep((s) => (s + 1) as 2 | 3 | 4);
+    if (step < 7) setStep((s) => (s + 1) as 2 | 3 | 4 | 5 | 6 | 7);
   }
 
   function onBack() {
     if (step > 1) {
       setShowValidationErrors(false);
-      setStep((s) => (s - 1) as 1 | 2 | 3);
+      setStep((s) => (s - 1) as 1 | 2 | 3 | 4 | 5 | 6);
     }
   }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Check if step 4 is valid
+    // Check if step 7 is valid
     const isValid =
-      state.category &&
-      (state.category !== "Other" || state.categoryOther) &&
+      state.referralInterest &&
       state.beta &&
       state.referral &&
       (state.referral !== "Other" || state.referralOther);
@@ -481,14 +567,14 @@ export default function WaitlistPage() {
           className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur"
         >
           {/* step pills */}
-          <div className="mb-6 flex items-center justify-center gap-2">
-            {[1, 2, 3, 4].map((n) => (
+          <div className="mb-6 flex items-center justify-center gap-1.5">
+            {[1, 2, 3, 4, 5, 6, 7].map((n) => (
               <button
                 key={n}
                 type="button"
-                onClick={() => setStep(n as 1 | 2 | 3 | 4)}
+                onClick={() => setStep(n as 1 | 2 | 3 | 4 | 5 | 6 | 7)}
                 className={[
-                  "h-9 w-9 rounded-full border text-sm font-semibold transition",
+                  "h-7 w-7 rounded-full border text-xs font-semibold transition",
                   n === step
                     ? "border-lime-300/60 bg-lime-400/20 text-lime-200"
                     : "border-white/10 bg-white/5 text-white/70 hover:border-lime-300/30",
@@ -615,11 +701,11 @@ export default function WaitlistPage() {
                     />
 
                     <CardSelect
-                      label="How often do you purchase products in these categories?"
-                      options={selectOptions.frequency}
-                      value={state.frequency}
+                      label="How many products do you typically purchase per month in these categories?"
+                      options={selectOptions.purchaseFrequency}
+                      value={state.purchaseFrequency}
                       onChange={(value) =>
-                        setState((s) => ({ ...s, frequency: value }))
+                        setState((s) => ({ ...s, purchaseFrequency: value }))
                       }
                       required
                       showError={showValidationErrors}
@@ -653,7 +739,7 @@ export default function WaitlistPage() {
 
               {/* Step 3 */}
               {step === 3 && (
-                <div className="space-y-5">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400/20 text-lime-200">
@@ -665,7 +751,7 @@ export default function WaitlistPage() {
 
                   <div className="space-y-2">
                     <div className="flex flex-col items-center">
-                      <FieldLabel>Challenges verifying authenticity/safety</FieldLabel>
+                      <FieldLabel>What challenges do you currently face when trying to verify product authenticity or safety?</FieldLabel>
                     </div>
                     <TextArea
                       rows={4}
@@ -716,13 +802,115 @@ export default function WaitlistPage() {
 
               {/* Step 4 */}
               {step === 4 && (
-                <div className="space-y-5">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400/20 text-lime-200">
                         4
                       </span>
-                      Category & Feedback
+                      Usage & Credit System
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <CardSelect
+                      label="How many product scans would you estimate needing per month?"
+                      options={selectOptions.scansPerMonth}
+                      value={state.scansPerMonth}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, scansPerMonth: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                    />
+
+                    <CardSelect
+                      label="Which credit package would likely suit your needs best?"
+                      options={selectOptions.creditPackage}
+                      value={state.creditPackage}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, creditPackage: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                    />
+
+                    <CardSelect
+                      label="Would you prefer:"
+                      options={selectOptions.paymentPreference}
+                      value={state.paymentPreference}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, paymentPreference: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                    />
+
+                    <CardSelect
+                      label="How important is product verification to your purchasing decisions?"
+                      options={selectOptions.verificationImportance}
+                      value={state.verificationImportance}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, verificationImportance: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 5 */}
+              {step === 5 && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-white/60">
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400/20 text-lime-200">
+                        5
+                      </span>
+                      Value Perception
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <CardSelect
+                      label="What would you consider a fair price per product scan?"
+                      options={selectOptions.fairPrice}
+                      value={state.fairPrice}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, fairPrice: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                      otherValue={state.fairPriceOther}
+                      onOtherChange={(value) =>
+                        setState((s) => ({ ...s, fairPriceOther: value }))
+                      }
+                    />
+
+                    <CardSelect
+                      label="Would you be willing to pay for verified product information if it helps you avoid counterfeit or unsafe products?"
+                      options={selectOptions.willingnessToPay}
+                      value={state.willingnessToPay}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, willingnessToPay: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 6 */}
+              {step === 6 && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-white/60">
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400/20 text-lime-200">
+                        6
+                      </span>
+                      User Category
                     </div>
                   </div>
 
@@ -743,25 +931,70 @@ export default function WaitlistPage() {
                     />
 
                     {state.category.toLowerCase().includes("business") && (
-                      <div className="space-y-2">
-                        <div className="flex flex-col items-center">
-                          <FieldLabel>If business: What type of business do you operate?</FieldLabel>
+                      <>
+                        <div className="space-y-2">
+                          <div className="flex flex-col items-center">
+                            <FieldLabel>What type of business do you operate?</FieldLabel>
+                          </div>
+                          <TextInput
+                            value={state.businessType}
+                            onChange={(e) =>
+                              setState((s) => ({
+                                ...s,
+                                businessType: e.target.value,
+                              }))
+                            }
+                            placeholder="Retail store, pharmacy, e-commerce..."
+                          />
                         </div>
-                        <TextInput
-                          value={state.businessType}
-                          onChange={(e) =>
-                            setState((s) => ({
-                              ...s,
-                              businessType: e.target.value,
-                            }))
-                          }
-                          placeholder="Retail store, pharmacy, e-commerce..."
-                        />
-                      </div>
+
+                        <div className="space-y-2">
+                          <div className="flex flex-col items-center">
+                            <FieldLabel>Approximately how many products would you need to verify monthly?</FieldLabel>
+                          </div>
+                          <TextInput
+                            value={state.businessMonthlyVolume}
+                            onChange={(e) =>
+                              setState((s) => ({
+                                ...s,
+                                businessMonthlyVolume: e.target.value,
+                              }))
+                            }
+                            placeholder="e.g. 50, 100, 500+"
+                          />
+                        </div>
+                      </>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 7 */}
+              {step === 7 && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-white/60">
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400/20 text-lime-200">
+                        7
+                      </span>
+                      Engagement & Incentives
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <CardSelect
+                      label="Would you be interested in earning bonus credits through referrals?"
+                      options={selectOptions.referralInterest}
+                      value={state.referralInterest}
+                      onChange={(value) =>
+                        setState((s) => ({ ...s, referralInterest: value }))
+                      }
+                      required
+                      showError={showValidationErrors}
+                    />
 
                     <CardSelect
-                      label="Would you be interested in participating in our beta testing program?"
+                      label="Would you participate in our beta testing program for additional free credits?"
                       options={selectOptions.beta}
                       value={state.beta}
                       onChange={(value) =>
@@ -789,7 +1022,7 @@ export default function WaitlistPage() {
 
                   <div className="space-y-2">
                     <div className="flex flex-col items-center">
-                      <FieldLabel>Anything specific you'd like to see?</FieldLabel>
+                      <FieldLabel>Any suggestions or features you&apos;d like to see in MAVSCAN?</FieldLabel>
                     </div>
                     <TextArea
                       rows={3}
@@ -814,7 +1047,7 @@ export default function WaitlistPage() {
                   Back
                 </button>
 
-                {step < 4 ? (
+                {step < 7 ? (
                   <button
                     type="button"
                     onClick={onContinue}
