@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import WaitlistProgress from "./components/WaitlistProgress";
 
 const features = [
   {
@@ -62,19 +63,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/5 bg-white/5 p-4 backdrop-blur">
-              <div className="flex items-center justify-between text-sm text-white/70">
-                <span>Waitlist progress</span>
-                <span className="text-lime-300">You&apos;re early</span>
-              </div>
-              <div className="mt-3 h-2 rounded-full bg-white/10">
-                <div className="h-2 w-[68%] rounded-full bg-gradient-to-r from-lime-400 via-emerald-400 to-cyan-300 shadow-[0_0_20px_rgba(163,255,0,0.5)]" />
-              </div>
-              <p className="mt-2 text-xs text-white/60">
-                Looks similar to the flow screens you shared, with our primary
-                color locked to #0f172b.
-              </p>
-            </div>
+            <WaitlistProgress />
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
