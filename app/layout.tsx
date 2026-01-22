@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MAVSCAN",
   description: "Counterfeit-proof shopping",
+  icons: {
+    icon: "/mavscan logo.jpg",
+  },
 };
 
 export default function RootLayout({
